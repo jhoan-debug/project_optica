@@ -1,0 +1,24 @@
+
+
+    """recomendacion por parte de la IA para poner el cursor en la tabla y desplazarla con la rueda"""
+    # --- Zona con scroll ---
+    contenedor = t.Frame(ventana)
+    contenedor.pack(fill="both", expand=True, padx=20, pady=(0, 15))
+
+    canvas = t.Canvas(contenedor, highlightthickness=0)
+    scroll = ttk.Scrollbar(contenedor, orient="vertical", command=canvas.yview)
+    canvas.configure(yscrollcommand=scroll.set)
+    scroll.pack(side="right", fill="y")
+    canvas.pack(side="left", fill="both", expand=True)
+
+    tabla = t.Frame(canvas)
+    id_tabla = canvas.create_window((0, 0), window=tabla, anchor="nw")
+
+    tabla.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+    canvas.bind("<Configure>", lambda e: canvas.itemconfigure(id_tabla, width=e.width))
+
+    # Rueda del mouse (solo mientras el cursor está sobre la tabla) """recomendacion de la IA"""
+    def _rueda(event):
+        canvas.yview_scroll(int(-event.delta / 120), "units")
+    canvas.bind("<Enter>", lambda e: canvas.bind_all("<MouseWheel>", _rueda))
+    canvas.bind("<Leave>", lambda e: canvas.unbind_all("<MouseWheel>"))
